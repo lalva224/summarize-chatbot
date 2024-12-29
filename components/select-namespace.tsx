@@ -13,46 +13,28 @@ import {
   import { Button } from "./ui/button";
   import { useNamespace } from "@/app/NamespaceContext";
   
-  
+  export const getNamespaces = async(namespaces:string[],setNamespaces:React.Dispatch<React.SetStateAction<Array<string>>>)=>{
+    const response = await fetch('/api/namespaces',{
+      method:'GET'
+    })
+    if(!response.ok){
+      console.log('empty namespace')
+    }
+    const data = await response.json()
+    
+    setNamespaces([...namespaces,...data])
+  }
   export const SelectNamespace = () => {
-      const [namespaces,setNamespaces] = useState(['None'])
+    const {namespaces,setNamespaces} = useNamespace()
       const {setSelectedNamespace} = useNamespace()
-      const getNamespaces = async()=>{
-        const response = await fetch('/api/namespaces',{
-          method:'GET'
-        })
-        if(!response.ok){
-          console.log('empty namespace')
-        }
-        const data = await response.json()
-        
-        setNamespaces([...namespaces,...data])
-      }
-      const addNamespace = async(namespace:string)=>{
-        
-        const response = await fetch('api/namespaces',{
-          method:'POST',
-          headers:{
-            'Content-Type':'application/json'
-          },
-          //sending namespace: namespace on other end
-          body:JSON.stringify({namespace})
-        })
-        if(!response.ok){
-          console.log(response.status)
-        }
-        const result = await response.json()
-        console.log(result)
-  
-        //refresh by calling getNamespaces
-        getNamespaces()
-      }
+      
+    
       useEffect(()=>{
        
-        getNamespaces()
+        getNamespaces(namespaces,setNamespaces)
       },[])
   
-    
+     
     return (
       <>
       {/**onvalueChange automatically looks at SelectValue to pass in the value */}
@@ -63,8 +45,9 @@ import {
           <SelectContent>
               {
                   namespaces.map((namespace,index)=>(
+                    namespace ? (
                     <SelectItem key={index} value={namespace}>{namespace}</SelectItem>
-                   
+                    ):null
   
                   ))
               }

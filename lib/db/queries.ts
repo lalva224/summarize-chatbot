@@ -49,11 +49,8 @@ export const getUserNamespaces = async (userId: UUID) => {
   }
 };
 export const addUserNamespace = async (userId: UUID,newNamespace:string)=>{
-  //SQL expression to add namespace to namespace array
-  // const finalSql: SQL = sql`array_append(namespaces, ${newNamespace})`;
-  // console.log(newNamespace)
-  // console.log(userId)
-  console.log('adding user namespace')
+ 
+  console.log('adding user namespace: ', newNamespace)
   try {
     return await db.update(user).set({ namespaces:sql`array_append(${user.namespaces},${newNamespace})`}).where(eq(user.id, userId));
   } catch (error) {
@@ -61,6 +58,17 @@ export const addUserNamespace = async (userId: UUID,newNamespace:string)=>{
     
   }
   }
+
+export const removeUserNamespace = async(userId:UUID, namespace:string)=>{
+  console.log('removing namsepace:',namespace)
+  try{
+    return await db.update(user).set({namespaces:sql`array_remove(${user.namespaces},${namespace})`}).where(eq(user.id,userId))
+  }
+  catch(error){
+    console.log(error)
+    console.error('Error updating namespaces',error)
+  }
+}
 
 export async function createUser(email: string, password: string) {
   const salt = genSaltSync(10);

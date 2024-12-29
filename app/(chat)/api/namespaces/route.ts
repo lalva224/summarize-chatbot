@@ -1,4 +1,4 @@
-import { addUserNamespace, getUserNamespaces } from "@/lib/db/queries";
+import { addUserNamespace, getUserNamespaces,removeUserNamespace } from "@/lib/db/queries";
 import {auth} from '@/app/(auth)/auth'
 import { UUID } from "crypto";
 
@@ -21,10 +21,25 @@ export async function POST(request:Request){
     try{
     const session = await auth()
     const userId = session?.user?.id as UUID
-    const {namespace} = await request.json()
-    console.log(namespace)
-    const result = await addUserNamespace(userId,namespace)
+    const {newNamespace} = await request.json()
+    console.log(newNamespace)
+    const result = await addUserNamespace(userId,newNamespace)
     return new Response(JSON.stringify('Success'),{status:200})
+    }
+    catch(error){
+        console.log(error)
+        return new Response(JSON.stringify(error),{status:500})
+    }
+}
+
+export async function DELETE(request:Request){
+    try{
+        const session = await auth()
+        const userId = session?.user?.id as UUID
+        const data = await request.json()
+        const namespace = data['namespace']
+        const result = await removeUserNamespace(userId,namespace)
+        return new Response(JSON.stringify('Success'),{status:200})
     }
     catch(error){
         console.log(error)

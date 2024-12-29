@@ -14,7 +14,27 @@ import { Button } from "./ui/button"
 import { useNamespace } from "@/app/NamespaceContext"
   export const ConfirmationDialog = ()=>{
     const {selectedNamespace} = useNamespace()
-    console.log(selectedNamespace)
+
+    const removeNamespace = async()=>{
+        if(selectedNamespace && selectedNamespace!='None'){
+            const result = await fetch('api/namespaces',{
+                method:'DELETE',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({namespace:selectedNamespace})
+            })
+            if(!result.ok){
+                console.log(result.status)
+            }
+            const response = result.json()
+            window.location.reload()
+        }
+        else{
+            console.log('None selected!')
+        }
+        
+    }
     return (
         <>
         <AlertDialog>
@@ -41,7 +61,7 @@ import { useNamespace } from "@/app/NamespaceContext"
             </AlertDialogHeader>
             <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction >Continue</AlertDialogAction>
+            <AlertDialogAction onClick={removeNamespace} >Continue</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
         </AlertDialog>
