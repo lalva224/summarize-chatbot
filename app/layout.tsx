@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 
 import './globals.css';
+import { NamespaceProvider } from './NamespaceContext';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://chat.vercel.ai'),
@@ -63,9 +64,12 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <NamespaceProvider>
           <Toaster position="top-center" />
           {children}
+          </NamespaceProvider>
         </ThemeProvider>
+
       </body>
     </html>
   );

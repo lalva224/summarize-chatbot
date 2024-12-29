@@ -29,6 +29,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
+import { ContextButton } from './ContextButton';
 
 function PureMultimodalInput({
   chatId,
@@ -187,11 +188,10 @@ function PureMultimodalInput({
 
   return (
     <div className="relative w-full flex flex-col gap-4">
-      {messages.length === 0 &&
-        attachments.length === 0 &&
-        uploadQueue.length === 0 && (
-          <SuggestedActions append={append} chatId={chatId} />
-        )}
+      <div className='flex justify-between'>
+              <ContextButton type='add'/>
+              <ContextButton type ='remove' />
+      </div>
 
       <input
         type="file"
