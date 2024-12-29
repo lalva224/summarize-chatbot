@@ -1,8 +1,9 @@
 import 'server-only';
 
 import { genSaltSync, hashSync } from 'bcrypt-ts';
-import { and, asc, desc, eq, gt, gte } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, gte, sql, SQL } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
+import { UUID } from 'crypto';
 import postgres from 'postgres';
 
 import {
@@ -34,6 +35,32 @@ export async function getUser(email: string): Promise<Array<User>> {
     throw error;
   }
 }
+export const getUserNamespaces = async (userId: UUID) => {
+  try{
+  const result = await db
+    .select({ namespaces: user.namespaces })
+    .from(user)
+    .where(eq(user.id, userId));
+  return result[0]?.namespaces ?? [];
+  }
+  catch(error){
+    console.error('no namespaces')
+    
+  }
+};
+export const addUserNamespace = async (userId: UUID,newNamespace:string)=>{
+  //SQL expression to add namespace to namespace array
+  // const finalSql: SQL = sql`array_append(namespaces, ${newNamespace})`;
+  // console.log(newNamespace)
+  // console.log(userId)
+  console.log('adding user namespace')
+  try {
+    return await db.update(user).set({ namespaces:sql`array_append(${user.namespaces},${newNamespace})`}).where(eq(user.id, userId));
+  } catch (error) {
+    console.error('Error updating namespaces', error);
+    
+  }
+  }
 
 export async function createUser(email: string, password: string) {
   const salt = genSaltSync(10);
