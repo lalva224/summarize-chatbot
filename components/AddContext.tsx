@@ -19,9 +19,12 @@ export function AddContext() {
     const {namespaces,setNamespaces} = useNamespace()
     const [newNamespace,setNewNamespace] = useState('')
     const [isOpen,setIsOpen] = useState(false)
+    const [duplicate,setDuplicate] = useState(false)
     const addNamespace = async()=>{
-        if(newNamespace in namespaces){
+      console.log(newNamespace in namespaces)
+        if(namespaces.includes(newNamespace)){
           console.log('duplicate')
+          setDuplicate(true)
           return 'Duplicate'
         }
         const response = await fetch('api/namespaces',{
@@ -80,7 +83,12 @@ export function AddContext() {
             <Input id="username" value="@peduarte" className="col-span-3" /> */}
           </div>
         </div>
-        <DialogFooter>
+        {
+          duplicate &&  <h1 className="text-red-500">Namespace already exists!</h1>
+        }
+       
+        <DialogFooter className="flex justify-between">
+            
           <Button onClick={addNamespace} type="submit">Add context</Button>
         </DialogFooter>
       </DialogContent>
